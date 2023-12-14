@@ -5,27 +5,17 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Shop body</h1>
+    <h1>Available links:</h1>
 
     <div>
         <ul>
-            {% for name, price in products %}
-                <li>{{ name|capfirst }} for ${{ price|floatformat:'2' }}</li>
-                {% if name|length_is:'7' %}
-                	Lucky product!
-                {% endif %}
-                {% if price == 499.99 %}
-                	<span style="background-color: crimson">Action!!!</span>
-                {% endif %} 
-                {% empty %}
-                    No products here
+            {% for link in links %}
+                <li><a href="{{ link }}">{{ link }}</a></li>
+            {% empty %}
+                No links here
             {% endfor %}
-
         </ul>
     </div>
 
-    <div>
-        {% lorem 3 p random %}
-    </div>
 
 {% endblock %}

@@ -1,15 +1,35 @@
+from django.contrib.auth.models import Group
 from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse
+from .models import Product, Order
+
 
 def shop_index(request: HttpRequest):
-    products = [
-        ('laptop', 2000),
-        ('desktop', 3000),
-        ('smartphone', 1000),
-        ('tv', 2500),
-        ('music station', 499.99),
+    links = [
+        'orders/',
+        'groups/',
+        'products/',
     ]
     context = {
-        'products': products,
+        'links': links,
     }
     return render(request, 'shopapp/shop-index.html', context=context)
+
+
+def groups_list(request: HttpRequest):
+    context = {
+        'groups': Group.objects.prefetch_related('permissions').all(),
+    }
+    return render(request, 'shopapp/groups-list.html', context=context)
+
+def products_list(request: HttpRequest):
+    context = {
+        'products': Product.objects.all(),
+    }
+    return render(request, 'shopapp/products-list.html', context=context)
+
+def orders_list(request: HttpRequest):
+    context = {
+        'orders': Order.objects.select_related('user').prefetch_related('products').all()
+    }
+    return render(request, 'shopapp/orders-list.html', context=context)
