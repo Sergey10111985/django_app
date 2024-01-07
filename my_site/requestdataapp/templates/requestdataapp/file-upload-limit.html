@@ -1,0 +1,23 @@
+{% extends 'requestdataapp/base.html' %}
+
+{% block title %}
+	Limited upload
+{% endblock %}
+
+{% block body %}
+	<h1>Limited upload file</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <p>
+            <input type="file" name="lfile">
+            {% if file_too_large == 1 %}
+                <p style="color: red">File too large</p>
+            {% endif %}
+        </p>
+        <button type="submit">
+            Upload
+        </button>
+    </form>
+
+{% endblock %}
