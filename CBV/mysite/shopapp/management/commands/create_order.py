@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.core.management import BaseCommand
 
-from shopapp.models import Order
+from CBV.mysite.shopapp.models import Order
 
 
 class Command(BaseCommand):
