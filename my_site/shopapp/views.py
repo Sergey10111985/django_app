@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect, reverse
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 
 from .forms import OrderForm, GroupForm
 from .models import Product, Order
@@ -49,7 +50,15 @@ class ProductsListView(ListView):
     queryset = Product.objects.filter(archived=False)
 
 
-class ProductCreateView(CreateView):
+class ProductCreateView(UserPassesTestMixin, CreateView):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        response = super().form_valid(form)
+        return response
+
     model = Product
     fields = ['name', 'price', 'description', 'discount']
     success_url = reverse_lazy('shopapp:products_list')
@@ -66,10 +75,10 @@ class ProductUpdateView(UpdateView):
             kwargs={'pk': self.object.pk}
         )
 
+
 class ProductDeleteView(DeleteView):
     model = Product
     success_url = reverse_lazy('shopapp:products_list')
-
 
     def form_valid(self, form):
         success_url = self.get_success_url()
@@ -77,7 +86,8 @@ class ProductDeleteView(DeleteView):
         self.object.save()
         return HttpResponseRedirect(success_url)
 
-class OrdersListView(ListView):
+
+class OrdersListView(LoginRequiredMixin, ListView):
     queryset = (
         Order.objects
         .select_related('user')
@@ -85,17 +95,20 @@ class OrdersListView(ListView):
     )
 
 
-class OrderDetailView(DetailView):
+class OrderDetailView(PermissionRequiredMixin, DetailView):
+    permission_required = "shopapp.view_order"
     queryset = (
         Order.objects
         .select_related('user')
         .prefetch_related('products')
     )
+
 
 class OrderCreateView(CreateView):
     model = Order
     fields = ['delivery_address', 'products', 'promo_code', 'user']
     success_url = reverse_lazy('shopapp:orders_list')
+
 
 class OrderUpdateView(UpdateView):
     model = Order
@@ -107,6 +120,7 @@ class OrderUpdateView(UpdateView):
             'shopapp:order_details',
             kwargs={'pk': self.object.pk}
         )
+
 
 class OrderDeleteView(DeleteView):
     model = Order
