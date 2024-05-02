@@ -50,9 +50,9 @@ class ProductsListView(ListView):
     queryset = Product.objects.filter(archived=False)
 
 
-class ProductCreateView(UserPassesTestMixin, CreateView):
-    def test_func(self):
-        return self.request.user.is_superuser
+class ProductCreateView(PermissionRequiredMixin, CreateView):
+
+    permission_required = "shopapp.add_product"
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
@@ -64,7 +64,17 @@ class ProductCreateView(UserPassesTestMixin, CreateView):
     success_url = reverse_lazy('shopapp:products_list')
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(UserPassesTestMixin, UpdateView):
+    def test_func(self):
+        if self.request.user.is_superuser:
+            return True
+
+        self.object = self.get_object()
+
+        has_edit_perm = self.request.user.has_perm("shopapp.change_product")
+        created_by_current_user = self.object.created_by == self.request.user
+        return has_edit_perm and created_by_current_user
+
     model = Product
     fields = ['name', 'price', 'description', 'discount']
     template_name_suffix = '_update_form'
