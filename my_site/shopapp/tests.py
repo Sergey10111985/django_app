@@ -60,11 +60,11 @@ class ProductDetailsViewTestCase(TestCase):
         print(self.product)
 
     def test_get_product(self):
-        response = self.client.get(reverse("shopapp:product_details"), kwargs={"pk": self.product.pk})
+        response = self.client.get(reverse("shopapp:product_details", kwargs={'pk': self.product.id}))
         self.assertEqual(response.status_code, 200)
 
     def test_get_product_and_check_content(self):
-        response = self.client.get(reverse("shopapp:product_details"), kwargs={"pk": self.product.pk})
+        response = self.client.get(reverse("shopapp:product_details", kwargs={'pk': self.product.id}))
         self.assertContains(response, self.product.name)
 
 
@@ -72,16 +72,18 @@ class ProductDetailsViewTestCase(TestCase):
 class ProductsListViewTestCase(TestCase):
     fixtures = [
         'products-fixture.json',
+        'user-fixture.json',
+        'auth-group-fixture.json',
     ]
 
     def test_product_list(self):
-        response = self.client.get(reverse("shopapp:product_list"))
+        response = self.client.get(reverse("shopapp:products_list"))
         self.assertQuerysetEqual(
-            qs=Product.objects.filter(active=False).all(),
+            qs=Product.objects.filter(archived=False).all(),
             values=(p.pk for p in response.context['products']),
             transform=lambda p: p.pk
         )
-        self.assertTemplateUsed(response, "shopapp/product_list.html")
+        self.assertTemplateUsed(response, "shopapp/products-list.html")
 
 
 class OrdersListViewTestCase(TestCase):
@@ -112,10 +114,12 @@ class OrdersListViewTestCase(TestCase):
 class ProductsExportViewTestCase(TestCase):
     fixtures = [
         'products-fixture.json',
+        'user-fixture.json',
+        'auth-group-fixture.json',
     ]
 
     def test_get_products_view(self):
-        response = self.client.get(reverse("shopapp:products-export"))
+        response = self.client.get(reverse("shopapp:products_export"))
         self.assertEqual(response.status_code, 200)
         products = Product.objects.order_by('pk').all()
         expected_data = [
