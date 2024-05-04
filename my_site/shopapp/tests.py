@@ -1,3 +1,4 @@
+from datetime import datetime
 from string import ascii_letters
 from random import choices
 from django.conf import settings
@@ -112,9 +113,9 @@ class OrdersListViewTestCase(TestCase):
 
 class ProductsExportViewTestCase(TestCase):
     fixtures = [
-        'products-fixture.json',
         'user-fixture.json',
         'auth-group-fixture.json',
+        'products-fixture.json',
     ]
 
     def test_get_products_view(self):
@@ -131,6 +132,9 @@ class ProductsExportViewTestCase(TestCase):
             for product in products
         ]
         products_data = response.json()
+        print(expected_data)
+        print('*' * 100)
+        print(products_data)
         self.assertEqual(products_data["products"], expected_data)
 
 
@@ -164,14 +168,15 @@ class OrderDetailViewTestCase(TestCase):
 
 class OrdersExportTestCase(TestCase):
     fixtures = [
-        'products-fixture.json',
         'user-fixture.json',
-        'orders-fixture.json',
         'auth-group-fixture.json',
+        'products-fixture.json',
+        'orders-fixture.json',
     ]
 
     @classmethod
     def setUpClass(cls):
+        super().setUpClass()
         cls.user = User.objects.create_user(username="TestBob", password="qwerty")
         cls.user.is_staff = True
         cls.user.save()
@@ -184,22 +189,18 @@ class OrdersExportTestCase(TestCase):
         self.client.force_login(self.user)
 
     def test_get_products_view(self):
-        print('IN TEST', self.user.username, self.user.is_staff)
         response = self.client.get(reverse("shopapp:orders_export"))
         self.assertEqual(response.status_code, 200)
         orders = Order.objects.order_by('id').all()
-        expected_data = []
-        for order in orders:
-            products = []
-            for product in order.products.all():
-                products.append(product.id)
-            expected_data.append({
+        expected_data = [
+            {
                 "pk": order.id,
                 "delivery_address": order.delivery_address,
                 "promo_code": order.promo_code,
-                "created_at": order.created_at,
                 "user_id": order.user_id,
-                "products": products,
-            })
+                "products": [p.id for p in order.products.all()],
+            }
+            for order in orders
+        ]
         products_data = response.json()
         self.assertEqual(products_data["orders"], expected_data)
