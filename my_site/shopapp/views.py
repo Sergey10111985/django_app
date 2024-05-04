@@ -51,7 +51,6 @@ class ProductsListView(ListView):
 
 
 class ProductCreateView(PermissionRequiredMixin, CreateView):
-
     permission_required = "shopapp.add_product"
 
     def form_valid(self, form):
@@ -150,3 +149,29 @@ class ProductsDataExportView(View):
             for product in products
         ]
         return JsonResponse({"products": products_data})
+
+
+class OrdersDataExportView(UserPassesTestMixin, View):
+
+    def test_func(self):
+        print('IN VIEW', self.request.user.username, self.request.user.is_staff)
+        if self.request.user.is_staff:
+            return True
+
+    def get(self, request: HttpRequest) -> JsonResponse:
+        orders = Order.objects.order_by('id').all()
+        orders_data = []
+        for order in orders:
+            products = []
+            for product in order.products.all():
+                products.append(product.id)
+            orders_data.append({
+                "pk": order.id,
+                "delivery_address": order.delivery_address,
+                "promo_code": order.promo_code,
+                "created_at": order.created_at,
+                "user_id": order.user_id,
+                "products": products,
+            })
+        print(orders_data)
+        return JsonResponse({"orders": orders_data})
