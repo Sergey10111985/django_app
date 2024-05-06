@@ -11,9 +11,15 @@ class GroupForm(ModelForm):
         fields = ['name']
 
 class ProductForm(forms.ModelForm):
+    form = forms.ClearableFileInput()
+    form.allow_multiple_selected = True
+    form.attrs = {'multiple': True}
     class Meta:
         model = Product
-        fields = 'name', 'price', 'description', 'discount'
+        fields = 'name', 'price', 'description', 'discount', 'preview'
+    images = forms.ImageField(
+        widget=form,
+    )
 
 
 class OrderForm(forms.ModelForm):
