@@ -8,6 +8,14 @@
 	<h1>user info</h1>
     {% if user.is_authenticated %}
         <h2>Details:</h2>
+        {% if user.profile.avatar %}
+            <img src="{{ user.avatar.url }}">
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Change Avatar</button>
+        </form>
         <p>Username: {{ user.username }}</p>
         <p>First name: {{ user.first_name }}</p>
         <p>Last name: {{ user.last_name }}</p>

@@ -81,13 +81,13 @@ class ProductUpdateView(UserPassesTestMixin, UpdateView):
     form_class = ProductForm
 
     def form_valid(self, form):
-        response = super().form_valid(form)
-        for image in form.files.getlist("images"):
+        files = form.cleaned_data["images"]
+        for image in files:
             ProductImage.objects.create(
                 product=self.object,
                 image=image,
             )
-        return response
+        return super().form_valid(form)
 
     def get_success_url(self):
         return reverse(

@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from django.contrib.auth.views import LogoutView
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
@@ -8,11 +9,26 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, CreateView
 
+from .forms import AboutMeForm
 from .models import Profile
 
 
 class AboutMeView(TemplateView):
     template_name = "myauth/about-me.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = AboutMeForm()
+        return context
+
+    def post(self, request: HttpRequest) -> HttpResponse:
+        form = AboutMeForm(request.POST)
+        if form.is_valid():
+            form.save()
+        return redirect(request.path)
+
+
+
 
 
 class RegisterView(CreateView):
