@@ -8,3 +8,4 @@ class AboutMeForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = 'avatar',
+

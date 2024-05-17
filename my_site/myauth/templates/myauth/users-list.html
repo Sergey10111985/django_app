@@ -1,0 +1,29 @@
+{% extends 'myauth/base.html' %}
+
+{% block title %}
+    List of users
+{% endblock %}
+
+{% block body %}
+    <h1>List of users</h1>
+    <ol style="font-size: 20px">
+        {% for u in users %}
+            <li>
+                {% if u.avatar %}
+                    <div>
+                        <img src="{{ u.avatar.url }}" width="100px" height="100px">
+                    </div>
+                {% endif %}
+                <p>User_id: {{ u.user.id }}</p>
+                <p>Username: {{ u.user.username }}</p>
+                <p>First name: {% firstof u.user.first_name '<strong>Not specified</strong>' %}</p>
+                <p>Last name: {% firstof u.user.last_name '<strong>Not specified</strong>' %}</p>
+                <p>Date joined: {{ u.user.date_joined }}</p>
+                <p>Bio: {% firstof u.bio '<strong>Not specified</strong>' %}</p>
+                {% if user.is_staff or user.id == u.user_id %}
+                	<a href="{% url 'myauth:user_info' pk=u.id %}">Посмотреть профиль</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ol>
+{% endblock %}

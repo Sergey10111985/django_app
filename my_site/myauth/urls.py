@@ -10,6 +10,8 @@ from myauth.views import (
     AboutMeView,
     RegisterView,
     JsonTestView,
+    UsersListView,
+    UserInfoView
 )
 
 app_name = 'myauth'
@@ -23,7 +25,9 @@ urlpatterns = [
         ),
         name='login'),
     path("logout/", logout_view, name="logout"),
-    path("about-me/", AboutMeView.as_view(), name="about-me"),
+    path("about-me/", AboutMeView.as_view(), name="about_me"),
+    path("users/", UsersListView.as_view(), name="users_list"),
+    path("user-info/<int:pk>", UserInfoView.as_view(), name="user_info"),
     path("register/", RegisterView.as_view(), name="register"),
     path("cookie/get/", get_cookie_view, name="get_cookie"),
     path("cookie/set/", set_cookie_view, name="set_cookie"),

@@ -1,34 +1,50 @@
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 from django.contrib.auth.views import LogoutView
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.views.generic import TemplateView, CreateView
+from django.views.generic import CreateView, UpdateView, ListView
+from django.contrib.auth.mixins import UserPassesTestMixin
 
 from .forms import AboutMeForm
 from .models import Profile
 
 
-class AboutMeView(TemplateView):
+class UsersListView(ListView):
+    model = Profile
+    template_name = 'myauth/users-list.html'
+    context_object_name = 'users'
+
+
+class UserInfoView(UserPassesTestMixin, UpdateView):
+    form_class = AboutMeForm
+    template_name = 'myauth/user-info.html'
+    success_url = reverse_lazy('myauth:users_list')
+
+    def get_object(self, queryset=None):
+        # не нашёл лучшего способа как взять нужный профиль
+        prof = Profile.objects.get(id=int(self.request.get_full_path()[-1]))
+        return prof
+
+    def test_func(self):
+        if self.request.user.is_superuser:
+            return True
+        return self.request.user.is_staff or self.request.user == self.get_object().user
+
+
+
+class AboutMeView(UpdateView):
     template_name = "myauth/about-me.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = AboutMeForm()
-        return context
+    form_class = AboutMeForm
+    success_url = reverse_lazy('myauth:about-me')
 
-    def post(self, request: HttpRequest) -> HttpResponse:
-        form = AboutMeForm(request.POST)
-        if form.is_valid():
-            form.save()
-        return redirect(request.path)
-
-
-
+    def get_object(self, queryset=None):
+        prof = Profile.objects.get(user_id=self.request.user)
+        return prof
 
 
 class RegisterView(CreateView):
@@ -72,6 +88,7 @@ class MyLogoutView(LogoutView):
     template_name = 'myauth/logout.html'
     next_page = reverse_lazy("myauth:login")
 
+
 @user_passes_test(lambda u: u.is_superuser)
 def set_cookie_view(request: HttpRequest) -> HttpResponse:
     response = HttpResponse("Cookies set")
@@ -83,10 +100,12 @@ def get_cookie_view(request: HttpRequest) -> HttpResponse:
     value = request.COOKIES.get("test_cookie", "default_value")
     return HttpResponse(f"Cookie value: {value!r}")
 
+
 @permission_required("myauth.view_profile", raise_exception=True)
 def set_session_view(request: HttpRequest) -> HttpResponse:
     request.session["test_session"] = "test_session_value"
     return HttpResponse("Session set")
+
 
 @login_required
 def get_session_view(request: HttpRequest) -> HttpResponse:
