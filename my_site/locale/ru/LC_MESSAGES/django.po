@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-20 12:20+0700\n"
+"POT-Creation-Date: 2024-05-21 10:16+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,29 +48,83 @@ msgstr "Товар"
 msgid "Products"
 msgstr "Товары"
 
+#: .\shopapp\models.py:24
+msgid "name"
+msgstr "название"
+
+#: .\shopapp\models.py:25
+msgid "description"
+msgstr "описание"
+
+#: .\shopapp\models.py:26
+msgid "price"
+msgstr "цена"
+
+#: .\shopapp\models.py:27
+msgid "discount"
+msgstr "скидка"
+
+#: .\shopapp\models.py:28 .\shopapp\models.py:57
+msgid "created at"
+msgstr "дата создания"
+
+#: .\shopapp\models.py:29
+msgid "archived"
+msgstr "архивирован"
+
+#: .\shopapp\models.py:30
+msgid "created by"
+msgstr "кем создан"
+
+#: .\shopapp\models.py:31
+msgid "preview"
+msgstr "предпросмотр"
+
 #: .\shopapp\models.py:52
 msgid "Order"
-msgstr "Заказ"
+msgstr "заказ"
 
 #: .\shopapp\models.py:53
 msgid "Orders"
-msgstr "Заказы"
+msgstr "заказы"
+
+#: .\shopapp\models.py:55
+msgid "delivery address"
+msgstr "адрес доставки"
+
+#: .\shopapp\models.py:56
+msgid "promo code"
+msgstr "промо код"
+
+#: .\shopapp\models.py:58
+msgid "user id"
+msgstr "ид пользователя"
+
+#: .\shopapp\models.py:59
+#, fuzzy
+#| msgid "Products"
+msgid "products"
+msgstr "Товары"
+
+#: .\shopapp\models.py:60
+msgid "receipt"
+msgstr "чек"
 
 #: .\shopapp\templates\shopapp\product-details.html:12
 #, python-format
 msgid ""
 "\n"
-"            <div>Description: <em> %(product.description)s </em></div>\n"
-"            <div>Price: %(product.price)s </div>\n"
-"            <div>Discount: %(product.discount)s </div>\n"
-"            <div>Archived: %(product.archived)s </div>\n"
+"            <div>Description: <em> %(desc)s </em></div>\n"
+"            <div>Price: %(price)s </div>\n"
+"            <div>Discount: %(discount)s </div>\n"
+"            <div>Archived: %(archived)s </div>\n"
 "        "
 msgstr ""
 "\n"
-"            <div>Описание: <em> %(product.description)s </em> </div>\n"
-"            <div>Цена: %(product.price)s </div>\n"
-"            <div>Скидка: %(product.discount)s </div>\n"
-"            <div>Архивный: %(product.archived)s </div>\n"
+"            <div>Описание: <em> %(desc)s </em></div>\n"
+"            <div>Цена: %(price)s </div>\n"
+"            <div>Скидка: %(discount)s </div>\n"
+"            <div>Архивный: %(archived)s </div>\n"
 "        "
 
 #: .\shopapp\templates\shopapp\product-details.html:23

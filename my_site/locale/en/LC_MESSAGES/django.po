@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-20 12:21+0700\n"
+"POT-Creation-Date: 2024-05-21 10:16+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,6 +48,42 @@ msgstr "Products"
 msgid "Products"
 msgstr "Products"
 
+#: .\shopapp\models.py:24
+msgid "name"
+msgstr ""
+
+#: .\shopapp\models.py:25
+msgid "description"
+msgstr ""
+
+#: .\shopapp\models.py:26
+#, fuzzy
+#| msgid "Price"
+msgid "price"
+msgstr "Price"
+
+#: .\shopapp\models.py:27
+#, fuzzy
+#| msgid "Discount"
+msgid "discount"
+msgstr "Discount"
+
+#: .\shopapp\models.py:28 .\shopapp\models.py:57
+msgid "created at"
+msgstr ""
+
+#: .\shopapp\models.py:29
+msgid "archived"
+msgstr ""
+
+#: .\shopapp\models.py:30
+msgid "created by"
+msgstr ""
+
+#: .\shopapp\models.py:31
+msgid "preview"
+msgstr ""
+
 #: .\shopapp\models.py:52
 msgid "Order"
 msgstr ""
@@ -56,14 +92,36 @@ msgstr ""
 msgid "Orders"
 msgstr ""
 
+#: .\shopapp\models.py:55
+msgid "delivery address"
+msgstr ""
+
+#: .\shopapp\models.py:56
+msgid "promo code"
+msgstr ""
+
+#: .\shopapp\models.py:58
+msgid "user id"
+msgstr ""
+
+#: .\shopapp\models.py:59
+#, fuzzy
+#| msgid "Products"
+msgid "products"
+msgstr "Products"
+
+#: .\shopapp\models.py:60
+msgid "receipt"
+msgstr ""
+
 #: .\shopapp\templates\shopapp\product-details.html:12
 #, python-format
 msgid ""
 "\n"
-"            <div>Description: <em> %(product.description)s </em></div>\n"
-"            <div>Price: %(product.price)s </div>\n"
-"            <div>Discount: %(product.discount)s </div>\n"
-"            <div>Archived: %(product.archived)s </div>\n"
+"            <div>Description: <em> %(desc)s </em></div>\n"
+"            <div>Price: %(price)s </div>\n"
+"            <div>Discount: %(discount)s </div>\n"
+"            <div>Archived: %(archived)s </div>\n"
 "        "
 msgstr ""
 

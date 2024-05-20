@@ -66,7 +66,7 @@ class ProductInline(admin.StackedInline):
 
 
 @admin.register(Order)
-class OederAdmin(admin.ModelAdmin):
+class OrderAdmin(admin.ModelAdmin):
     inlines = [
         ProductInline,
     ]
