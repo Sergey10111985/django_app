@@ -9,11 +9,11 @@
 {% block body %}
     <h1>{% translate 'Product' %} <strong>{{ product.name }}</strong></h1>
     <div>
-        {% blocktranslate %}
-            <div>Description: <em> {{ product.description }} </em></div>
-            <div>Price: {{ product.price }} </div>
-            <div>Discount: {{ product.discount }} </div>
-            <div>Archived: {{ product.archived }} </div>
+        {% blocktranslate with desc=product.description price=product.price discount=product.discount archived=product.archived %}
+            <div>Description: <em> {{ desc }} </em></div>
+            <div>Price: {{ price }} </div>
+            <div>Discount: {{ discount }} </div>
+            <div>Archived: {{ archived }} </div>
         {% endblocktranslate %}
 
         {% if product.preview %}
