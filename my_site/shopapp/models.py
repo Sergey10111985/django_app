@@ -2,6 +2,9 @@ import os
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils.translation import gettext_lazy as _
+
+
 
 
 def poduct_preview_directory_path(instance: "Product", filename: str) -> str:
@@ -15,7 +18,8 @@ class Product(models.Model):
     class Meta:
         ordering = ['name', 'price']
         # db_table = 'tech_products'
-        # verbose_name_plural = 'products'
+        verbose_name = _('Product')
+        verbose_name_plural = _('Products')
 
     name = models.CharField(max_length=100)
     description = models.TextField(null=False, blank=True)
@@ -44,6 +48,10 @@ class ProductImage(models.Model):
 
 
 class Order(models.Model):
+    class Meta:
+        verbose_name = _('Order')
+        verbose_name_plural = _('Orders')
+
     delivery_address = models.TextField(null=False, blank=True)
     promo_code = models.CharField(max_length=20, null=False, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

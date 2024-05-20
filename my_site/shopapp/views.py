@@ -19,6 +19,7 @@ class ShopIndexView(View):
         ]
         context = {
             'links': links,
+            'items': 1,
         }
         return render(request, 'shopapp/shop-index.html', context=context)
 
