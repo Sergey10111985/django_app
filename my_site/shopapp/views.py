@@ -4,6 +4,7 @@
 Разные view  интернет-магазина: по товарам, заказам и т.д.
 """
 
+import logging
 from django.contrib.auth.models import Group
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect, reverse
@@ -19,7 +20,9 @@ from drf_spectacular.utils import extend_schema, OpenApiResponse
 from .forms import OrderForm, GroupForm, ProductForm
 from .models import Product, Order, ProductImage
 from .serializers import ProductSerializer, OrderSerializer
+# from my_site.settings import INTERNAL_IPS
 
+logger = logging.getLogger(__name__)
 
 @extend_schema(description="Product views CRUD")
 class ProductViewSet(ModelViewSet):
@@ -95,6 +98,9 @@ class ShopIndexView(View):
             'links': links,
             'items': 1,
         }
+        logger.debug('List of links: %s', links)
+        logger.info('Rendering shop index')
+        # logger.critical('HERE IT IS', INTERNAL_IPS)
         return render(request, 'shopapp/shop-index.html', context=context)
 
 
@@ -234,6 +240,9 @@ class ProductsDataExportView(View):
             }
             for product in products
         ]
+        elem = products_data[0]
+        name = elem["name"]
+        print("name:", name)
         return JsonResponse({"products": products_data})
 
 
