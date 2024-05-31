@@ -41,3 +41,7 @@ class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = 'delivery_address', 'products', 'promo_code', 'user'
+
+
+class CSVImportForm(forms.Form):
+    csv_file = forms.FileField()

@@ -6,20 +6,25 @@
 
 {% block body %}
     <h1>Article list</h1>
-    {% for article in articles %}
-        <h3>{{ article.title }}</h3>
-        <p>Date of publish: {{ article.pub_date|date }}</p>
-        <p>Author: {{ article.author.name }}</p>
-        <p>Cathegory: {{ article.category.name }}</p>
-        <p>Tags:
-            {% if article.tags.values %}
-                {% for tag in article.tags.values %}
-                    <p>{{ tag.name }}</p>
-                {% endfor %}
-            {% else %}
-                <p>No tags</p>
-            {% endif %}
-        </p>
-    {% endfor %}
+    {% if articles %}
+        {% for article in articles %}
+            <h3><a href="{% url "blogapp:article-detail" pk=article.pk %}">{{ article.title }}</a></h3>
+            <p>Date of publish: {{ article.pub_date|date }}</p>
+            <p>Author: {{ article.author.name }}</p>
+            <p>Cathegory: {{ article.category.name }}</p>
+            <p>Tags:
+                {% if article.tags.values %}
+                    {% for tag in article.tags.values %}
+                        <p>{{ tag.name }}</p>
+                    {% endfor %}
+                {% else %}
+                    <p>No tags</p>
+                {% endif %}
+            </p>
+        {% endfor %}
+    {% else %}
+        <h3>No articles yet</h3>
+    {% endif %}
+
 
 {% endblock %}
