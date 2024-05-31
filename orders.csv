@@ -1,2 +1,2 @@
-delivery_address,promo_code
-"ADDRESS","qwe123"
+delivery_address,promo_code,products
+"ADDRESS","qwe123","1,2,3"

@@ -1,7 +1,7 @@
 from csv import DictReader
 from io import TextIOWrapper
 
-from shopapp.models import Order
+from shopapp.models import Order, Product
 
 
 def save_csv_products(file, encoding):
@@ -17,15 +17,18 @@ def save_csv_products(file, encoding):
     Product.objects.bulk_create(products)
     return products
 
+
 def save_csv_orders(file, encoding):
     csv_file = TextIOWrapper(
         file,
         encoding=encoding,
     )
     reader = DictReader(csv_file)
-    orders = [
-        Order(**row)
-        for row in reader
-    ]
-    Order.objects.bulk_create(orders)
-    return orders
+    for row in reader:
+        order = Order.objects.create(
+            delivery_address=row["delivery_address"],
+            promo_code=row["promo_code"],
+        )
+        products_ids = row["products"].split(",")
+        order.products.set(products_ids)
+
