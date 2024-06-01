@@ -6,10 +6,11 @@
 
 import logging
 from csv import DictWriter
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect, reverse
 from django.views import View
+from django.views.decorators.cache import cache_page
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from rest_framework.response import Response
@@ -20,6 +21,8 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, OpenApiResponse
+from django.utils.decorators import method_decorator
+from django.core.cache import cache
 
 from django.contrib.syndication.views import Feed
 from django.urls import reverse, reverse_lazy
@@ -61,6 +64,10 @@ class ProductViewSet(ModelViewSet):
         "price",
         "discount",
     ]
+
+    @method_decorator(cache_page(10))
+    def list(self, *args, **kwargs):
+        return super().list(*args, **kwargs)
 
     @extend_schema(
         summary="Get one product by id",
@@ -131,6 +138,7 @@ class OrdersViewSet(ModelViewSet):
 
 
 class ShopIndexView(View):
+    # @method_decorator(cache_page(20))
     def get(self, request: HttpRequest) -> HttpResponse:
         links = [
             'orders/',
@@ -144,6 +152,7 @@ class ShopIndexView(View):
         logger.debug('List of links: %s', links)
         logger.info('Rendering shop index')
         # logger.critical('HERE IT IS', INTERNAL_IPS)
+        print("*" * 500)
         return render(request, 'shopapp/shop-index.html', context=context)
 
 
@@ -239,6 +248,41 @@ class OrdersListView(LoginRequiredMixin, ListView):
     )
 
 
+class UserOrderListView(LoginRequiredMixin, ListView):
+    template_name = 'shopapp/user_orders.html'
+
+    def get_queryset(self):
+        self.owner = self.kwargs['pk']
+        queryset = (Order.objects.filter(user=self.owner)
+                    .select_related('user')
+                    .prefetch_related('products'))
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['owner'] = User.objects.get(pk=self.owner)
+        return data
+
+    context_object_name = 'orders'
+
+
+class UserOrdersExportView(LoginRequiredMixin, View):
+
+    def get(self, request: HttpRequest, pk: int) -> JsonResponse:
+        print(pk, '*' * 100)
+        cache_key = f'orders_data_export{pk}'
+        data = cache.get(cache_key)
+        if data is None:
+            orders = (Order.objects.filter(user_id=pk).order_by('id')
+                      .select_related('user')
+                      .prefetch_related('products')
+                      )
+            data = OrderSerializer(orders, many=True)
+            cache.set(cache_key, data, 100)
+        return JsonResponse({"orders": data.data})
+
+
 class OrderDetailView(PermissionRequiredMixin, DetailView):
     permission_required = "shopapp.view_order"
     queryset = (
@@ -273,19 +317,20 @@ class OrderDeleteView(DeleteView):
 
 class ProductsDataExportView(View):
     def get(self, request: HttpRequest) -> JsonResponse:
-        products = Product.objects.order_by('pk').all()
-        products_data = [
-            {
-                "pk": product.pk,
-                "name": product.name,
-                "price": product.price,
-                "archived": product.archived,
-            }
-            for product in products
-        ]
-        elem = products_data[0]
-        name = elem["name"]
-        print("name:", name)
+        cache_key = 'products_data_export'
+        products_data = cache.get(cache_key)
+        if products_data is None:
+            products = Product.objects.order_by('pk').all()
+            products_data = [
+                {
+                    "pk": product.pk,
+                    "name": product.name,
+                    "price": product.price,
+                    "archived": product.archived,
+                }
+                for product in products
+            ]
+            cache.set(cache_key, products_data, 100)
         return JsonResponse({"products": products_data})
 
 
@@ -310,7 +355,6 @@ class OrdersDataExportView(UserPassesTestMixin, View):
         return JsonResponse({"orders": orders_data})
 
 
-
 class LatestProductsFeed(Feed):
     title = "Latest Article Feed"
     description = "Updates on changes and addition blog Articles"
@@ -325,4 +369,3 @@ class LatestProductsFeed(Feed):
 
     def item_description(self, item: Product):
         return item.description[:50]
-
