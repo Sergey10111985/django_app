@@ -8,7 +8,7 @@ import logging
 from csv import DictWriter
 from django.contrib.auth.models import Group, User
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.views import View
 from django.views.decorators.cache import cache_page
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -252,7 +252,7 @@ class UserOrderListView(LoginRequiredMixin, ListView):
     template_name = 'shopapp/user_orders.html'
 
     def get_queryset(self):
-        self.owner = self.kwargs['pk']
+        self.owner = get_object_or_404(User, pk=self.kwargs["pk"])
         queryset = (Order.objects.filter(user=self.owner)
                     .select_related('user')
                     .prefetch_related('products'))
@@ -270,16 +270,17 @@ class UserOrderListView(LoginRequiredMixin, ListView):
 class UserOrdersExportView(LoginRequiredMixin, View):
 
     def get(self, request: HttpRequest, pk: int) -> JsonResponse:
-        print(pk, '*' * 100)
+
         cache_key = f'orders_data_export{pk}'
         data = cache.get(cache_key)
         if data is None:
+            print(pk, '*' * 100)
             orders = (Order.objects.filter(user_id=pk).order_by('id')
                       .select_related('user')
                       .prefetch_related('products')
                       )
             data = OrderSerializer(orders, many=True)
-            cache.set(cache_key, data, 100)
+            cache.set(cache_key, data, 10)
         return JsonResponse({"orders": data.data})
 
 
