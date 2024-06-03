@@ -160,3 +160,4 @@ cython_debug/
 .idea/
 /my_site/uploads/
 /my_site/cache/
+/my_site/database/

@@ -61,7 +61,7 @@ class AboutMeView(UpdateView):
     template_name = "myauth/about-me.html"
 
     form_class = AboutMeForm
-    success_url = reverse_lazy('myauth:about-me')
+    success_url = reverse_lazy('myauth:about_me')
 
     def get_object(self, queryset=None):
         prof = Profile.objects.get(user_id=self.request.user)
@@ -71,7 +71,7 @@ class AboutMeView(UpdateView):
 class RegisterView(CreateView):
     form_class = UserCreationForm
     template_name = 'myauth/register.html'
-    success_url = reverse_lazy('myauth:about-me')
+    success_url = reverse_lazy('myauth:about_me')
 
     def form_valid(self, form):
         response = super().form_valid(form)
