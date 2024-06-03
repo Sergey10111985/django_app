@@ -27,26 +27,22 @@ from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATABASE_DIR = BASE_DIR / 'database'
-DATABASE_DIR.mkdir(exist_ok=True)
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = getenv(
-    "DJANGO_SECRET_KEY",
-    'django-insecure-3&7d(jby8gc96)%t_af^7lxd*d+ig)jv7h+ww9bmq$_8dcc1h!'
-)
+SECRET_KEY = 'django-insecure-3&7d(jby8gc96)%t_af^7lxd*d+ig)jv7h+ww9bmq$_8dcc1h!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = getenv("DJANGO_DEBUG", 0) == 1
+DEBUG = True
 
 ALLOWED_HOSTS = [
-                    "0.0.0.0",
-                    "127.0.0.1",
-                    "localhost",
-                ] + getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
+    "0.0.0.0",
+    "127.0.0.1",
+    "localhost",
+]
 
 INTERNAL_IPS = [
     "127.0.0.1",
@@ -55,7 +51,6 @@ INTERNAL_IPS = [
 
 if DEBUG:
     import socket
-
     hostname, x, ips = socket.gethostbyname_ex(socket.gethostname())
     INTERNAL_IPS.append('10.0.2.2')
     INTERNAL_IPS.extend(
@@ -122,13 +117,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'my_site.wsgi.application'
 
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': DATABASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -159,6 +155,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -184,11 +181,6 @@ LANGUAGES = [
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-# STATIC_ROOT = Path(__file__).resolve().parent
-STATICFILES_DIRS = (
-  os.path.join(BASE_DIR, 'static'),
-)
-
 STATIC_URL = 'static/'
 
 MEDIA_URL = '/media/'
@@ -200,7 +192,7 @@ MEDIA_ROOT = BASE_DIR / 'uploads'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = reverse_lazy("myauth:about_me")
+LOGIN_REDIRECT_URL = reverse_lazy("myauth:about-me")
 
 LOGIN_URL = reverse_lazy("myauth:login")
 
@@ -224,58 +216,36 @@ SPECTACULAR_SETTINGS = {
 # LOGFILE_SIZE = 400
 # LOGFILE_COUNT = 3
 
-LOGLEVEL = getenv("DJANGO_LOGLEVEL", "info").upper()
-logging.config.dictConfig({
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "console": {
-            "format": "%(asctime)s %(levelname)s %(name)s:%(lineno)s %(module)s %(message)s",
-        },
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "console",
-        },
-    },
-    "loggers": {
-        "": {
-            "level": LOGLEVEL,
-            "handlers": ["console"],
-        },
-    },
-})
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'formatters': {
-#         'verbose': {
-#             'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
-#         },
-#     },
-#     'handlers': {
-#         'console': {
-#             'class': 'logging.StreamHandler',
-#             'formatter': 'verbose',
-#         },
-#         # 'logfile': {
-#         #     'class': 'logging.handlers.RotatingFileHandler',
-#         #     'filename': LOGFILE_NAME,
-#         #     'maxBytes': LOGFILE_SIZE,
-#         #     'backupCount': LOGFILE_COUNT,
-#         #     'formatter': 'verbose',
-#         # },
-#     },
-#     'root': {
-#         'handlers': [
-#             'console',
-#             # 'logfile'
-#         ],
-#         'level': 'INFO',
-#     },
-# }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        # 'logfile': {
+        #     'class': 'logging.handlers.RotatingFileHandler',
+        #     'filename': LOGFILE_NAME,
+        #     'maxBytes': LOGFILE_SIZE,
+        #     'backupCount': LOGFILE_COUNT,
+        #     'formatter': 'verbose',
+        # },
+    },
+    'root': {
+        'handlers': [
+            'console',
+            # 'logfile'
+        ],
+        'level': 'INFO',
+    },
+}
 
 # LOGGING = {
 #     'version': 1,
