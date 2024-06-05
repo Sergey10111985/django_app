@@ -10,11 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
+from dotenv import load_dotenv
 from os import getenv
 from pathlib import Path
 
 import logging.config
 import sentry_sdk
+
+load_dotenv()
+
 
 sentry_sdk.init(
     dsn="https://3562eab2f07bfb3bcf7f3591862048ef@o4507334622183424.ingest.de.sentry.io/4507334626705488",
@@ -34,19 +38,19 @@ DATABASE_DIR.mkdir(exist_ok=True)
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = getenv(
+SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY",
     'django-insecure-3&7d(jby8gc96)%t_af^7lxd*d+ig)jv7h+ww9bmq$_8dcc1h!'
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = getenv("DJANGO_DEBUG", 0) == 1
+DEBUG = os.getenv('DJANGO_DEBUG', False)
 
 ALLOWED_HOSTS = [
                     "0.0.0.0",
                     "127.0.0.1",
                     "localhost",
-                ] + getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
+                ] + os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
 
 INTERNAL_IPS = [
     "127.0.0.1",
@@ -225,7 +229,7 @@ SPECTACULAR_SETTINGS = {
 # LOGFILE_SIZE = 400
 # LOGFILE_COUNT = 3
 
-LOGLEVEL = getenv("DJANGO_LOGLEVEL", "info").upper()
+LOGLEVEL = os.getenv("DJANGO_LOGLEVEL", "info").upper()
 logging.config.dictConfig({
     "version": 1,
     "disable_existing_loggers": False,
@@ -299,3 +303,6 @@ logging.config.dictConfig({
 #         },
 #     },
 # }
+
+print('*' * 100, DEBUG)
+print('+' * 100, os.getenv("DJANGO_DEBUG"))
