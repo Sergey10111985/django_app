@@ -1,13 +1,11 @@
-version: "3.9"
-
 services:
   app:
     build:
       dockerfile: ./Dockerfile
     command:
-      - "gunicorn"
-      - "my_site.wsgi:application"
-      - "--bind"
+      - "python"
+      - "manage.py"
+      - "runserver"
       - "0.0.0.0:8080"
     ports:
       - "8000:8080"
